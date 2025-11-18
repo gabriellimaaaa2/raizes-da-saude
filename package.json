@@ -1,20 +1,23 @@
 {
-  "name": "raizes-da-saude",
+  "name": "raizes-client",
   "version": "1.0.0",
-  "description": "Plataforma digital de remédios caseiros e sabedoria popular brasileira",
-  "main": "server/index.js",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "cd server && node index.js",
-    "client": "cd client && npm run dev",
-    "build": "cd client && npm run build",
-    "start": "cd server && node index.js"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "vercel-build": "vite build"
   },
-  "keywords": ["remedios", "caseiros", "saude", "natural"],
-  "author": "",
-  "license": "MIT",
   "dependencies": {
-    "concurrently": "^8.2.2"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.8"
   }
 }
