@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Raízes da Saúde</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🌿 Raízes da Saúde</h1>
+                <p>Painel Administrativo</p>
+            </div>
+            <div class="login-form">
+                <input type="text" id="adminUsername" placeholder="Login" />
+                <input type="password" id="adminPassword" placeholder="Senha" />
+                <button onclick="login()">Entrar</button>
+                <p class="login-hint">Credenciais: lima05121968 / @Ga05121968</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Painel Principal -->
+    <div id="adminPanel" class="admin-panel" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🌿 Admin</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" onclick="showSection('dashboard')">
+                    📊 Dashboard
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('receitas')">
+                    📚 Receitas
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('categorias')">
+                    🗂️ Categorias
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('usuarios')">
+                    👥 Usuários
+                </a>
+                <a href="#" class="nav-item logout" onclick="logout()">
+                    🚪 Sair
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboardSection" class="content-section active">
+                <div class="section-header">
+                    <h1>Dashboard</h1>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3 id="totalUsuarios">0</h3>
+                            <p>Total de Usuários</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-info">
+                            <h3 id="totalReceitas">0</h3>
+                            <p>Total de Receitas</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🗂️</div>
+                        <div class="stat-info">
+                            <h3 id="totalCategorias">0</h3>
+                            <p>Total de Categorias</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-success">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <h3 id="totalAssinaturasAtivas">0</h3>
+                            <p>Assinaturas Ativas</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-warning">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <h3 id="totalGanhos">R$ 0,00</h3>
+                            <p>Ganhos (Assinaturas Ativas)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Usuários por Plano</h3>
+                        <div id="usuariosPorPlano" class="chart-container"></div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Receitas por Tipo</h3>
+                        <div id="receitasPorTipo" class="chart-container"></div>
+                    </div>
+                </div>
+
+<div class="dashboard-card">
+                        <h3>Assinaturas Vencendo (Próximos 7 dias)</h3>
+                        <div id="assinaturasVencendo" class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Usuário</th>
+                                        <th>Email</th>
+                                        <th>Plano</th>
+                                        <th>Expira em</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Preenchido via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Últimos Usuários Cadastrados</h3>
+                        <div id="ultimosUsuarios" class="table-container"></div>
+                    </div>
+            </section>
+
+            <!-- Receitas Section -->
+            <section id="receitasSection" class="content-section">
+                <div class="section-header">
+                    <h1>Gerenciar Receitas</h1>
+                    <button class="btn-primary" onclick="showReceitaModal()">+ Nova Receita</button>
+                </div>
+
+                <div class="filters">
+                    <input type="text" id="receitaBusca" placeholder="Buscar receita..." onkeyup="buscarReceitas()">
+                    <select id="receitaCategoria" onchange="buscarReceitas()">
+                        <option value="">Todas as categorias</option>
+                    </select>
+                </div>
+
+                <div id="receitasTable" class="table-container"></div>
+                <div id="receitasPagination" class="pagination"></div>
+            </section>
+
+            <!-- Categorias Section -->
+            <section id="categoriasSection" class="content-section">
+                <div class="section-header">
+                    <h1>Gerenciar Categorias</h1>
+                    <button class="btn-primary" onclick="showCategoriaModal()">+ Nova Categoria</button>
+                </div>
+
+                <div id="categoriasGrid" class="categories-grid"></div>
+            </section>
+
+            <!-- Usuários Section -->
+            <section id="usuariosSection" class="content-section">
+                <div class="section-header">
+                    <h1>Gerenciar Usuários</h1>
+                </div>
+
+                <div class="filters">
+                    <input type="text" id="usuarioBusca" placeholder="Buscar usuário..." onkeyup="buscarUsuarios()">
+                </div>
+
+                <div id="usuariosTable" class="table-container"></div>
+                <div id="usuariosPagination" class="pagination"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Receita -->
+    <div id="receitaModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="receitaModalTitle">Nova Receita</h2>
+                <span class="close" onclick="closeReceitaModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="receitaForm">
+                    <input type="hidden" id="receitaId">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nome da Receita *</label>
+                            <input type="text" id="receitaNome" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Categoria *</label>
+                            <select id="receitaCategoriaId" required></select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tipo *</label>
+                            <select id="receitaTipo" required>
+                                <option value="chá">Chá</option>
+                                <option value="garrafada">Garrafada</option>
+                                <option value="xarope">Xarope</option>
+                                <option value="compressa">Compressa</option>
+                                <option value="banho">Banho</option>
+                                <option value="óleo">Óleo</option>
+                                <option value="pomada">Pomada</option>
+                                <option value="tintura">Tintura</option>
+                                <option value="suco">Suco</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tempo de Preparo</label>
+                            <input type="text" id="receitaTempoPreparo" placeholder="Ex: 15 minutos">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descrição Breve *</label>
+                        <textarea id="receitaDescricao" rows="2" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Indicações *</label>
+                        <textarea id="receitaIndicacoes" rows="2" placeholder="Separadas por vírgula" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ingredientes (JSON) *</label>
+                        <textarea id="receitaIngredientes" rows="4" placeholder='[{"item": "Ingrediente 1", "obs": "Observação"}]' required></textarea>
+                        <small>Formato: Array de objetos com "item" e "obs"</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Modo de Preparo *</label>
+                        <textarea id="receitaModoPreparo" rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Como Tomar</label>
+                            <textarea id="receitaComoTomar" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Quando Tomar</label>
+                            <textarea id="receitaQuandoTomar" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contraindicações</label>
+                        <textarea id="receitaContraindicacoes" rows="2"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Observações</label>
+                        <textarea id="receitaObservacoes" rows="2"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Validade</label>
+                            <input type="text" id="receitaValidade" placeholder="Ex: 24 horas na geladeira">
+                        </div>
+                        <div class="form-group">
+                            <label>URL da Imagem</label>
+                            <input type="url" id="receitaImagemUrl" placeholder="https://...">
+                        </div>
+                    </div>
+
+<div class="form-group">
+                            <label>Tags (separadas por vírgula)</label>
+                            <input type="text" id="receitaTags" placeholder="tag1, tag2, tag3">
+                        </div>
+
+                        <hr>
+                        <h3>Detalhes do Produto (Opcional)</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Preço (R$)</label>
+                                <input type="number" step="0.01" id="receitaPreco" value="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label>Estoque</label>
+                                <input type="number" id="receitaEstoque" value="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Preparo Detalhado (Forma de Preapro)</label>
+                            <textarea id="receitaPreparoDetalhado" rows="3" placeholder="Detalhes completos sobre o preparo, se for um produto/receita mais complexa."></textarea>
+                        </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="closeReceitaModal()">Cancelar</button>
+                        <button type="submit" class="btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Categoria -->
+    <div id="categoriaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="categoriaModalTitle">Nova Categoria</h2>
+                <span class="close" onclick="closeCategoriaModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="categoriaForm">
+                    <input type="hidden" id="categoriaId">
+                    
+                    <div class="form-group">
+                        <label>Nome da Categoria *</label>
+                        <input type="text" id="categoriaNome" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea id="categoriaDescricao" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ícone (emoji)</label>
+                            <input type="text" id="categoriaIcone" placeholder="🌿" maxlength="2">
+                        </div>
+                        <div class="form-group">
+                            <label>Cor (hex)</label>
+                            <input type="color" id="categoriaCor" value="#4CAF50">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="closeCategoriaModal()">Cancelar</button>
+                        <button type="submit" class="btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Usuário -->
+    <div id="usuarioModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Usuário</h2>
+                <span class="close" onclick="closeUsuarioModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="usuarioForm">
+                    <input type="hidden" id="usuarioId">
+                    
+                    <div class="form-group">
+                        <label>Nome *</label>
+                        <input type="text" id="usuarioNome" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="usuarioEmail" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Telefone</label>
+                        <input type="tel" id="usuarioTelefone">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Plano *</label>
+                            <select id="usuarioPlano" required>
+                                <option value="gratuito">Gratuito</option>
+                                <option value="semanal">Semanal</option>
+                                <option value="mensal">Mensal</option>
+                                <option value="anual">Anual</option>
+                                <option value="vitalicio">Vitalício</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Data de Expiração</label>
+                            <input type="date" id="usuarioDataExpiracao">
+                        </div>
+                    </div>
+
+<div class="form-group">
+                            <label>Nova Senha (deixe em branco para não alterar)</label>
+                            <input type="password" id="usuarioNovaSenha">
+                        </div>
+
+                        <hr>
+                        <h3>Gerenciamento de Plano Manual</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Dar Plano</label>
+                                <select id="darPlanoNome" onchange="updateDarPlanoDias()">
+                                    <!-- Opções preenchidas via JS -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Duração (dias)</label>
+                                <input type="text" id="darPlanoDias" readonly>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-success" onclick="darPlanoManual()">Dar Plano Agora</button>
+
+                        <hr>
+                        <h3>Controle de Acesso e Banimento</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>IP de Cadastro</label>
+                                <input type="text" id="usuarioIpCadastro" readonly>
+                                <button type="button" class="btn-danger btn-small" onclick="banirIP('celular')">Banir IP (Celular)</button>
+                            </div>
+                            <div class="form-group">
+                                <label>IP de Último Login</label>
+                                <input type="text" id="usuarioIpUltimoLogin" readonly>
+                                <button type="button" class="btn-danger btn-small" onclick="banirIP('internet')">Banir IP (Internet)</button>
+                            </div>
+                        </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-danger" onclick="deletarUsuario()">Deletar</button>
+                        <button type="button" class="btn-secondary" onclick="closeUsuarioModal()">Cancelar</button>
+                        <button type="submit" class="btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

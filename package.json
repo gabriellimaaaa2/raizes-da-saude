@@ -1,0 +1,20 @@
+{
+  "name": "raizes-da-saude",
+  "version": "1.0.0",
+  "description": "Plataforma digital de remédios caseiros e sabedoria popular brasileira",
+  "main": "server/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && node index.js",
+    "client": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "start": "cd server && node index.js"
+  },
+  "keywords": ["remedios", "caseiros", "saude", "natural"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
